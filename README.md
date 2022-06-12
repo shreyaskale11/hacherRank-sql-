@@ -77,3 +77,89 @@ from employee
 where (months * salary)  = (select max(months * salary) 
                            from Employee) ;
  ```                          
+
+Query the Western Longitude (LONG_W) for the largest Northern Latitude (LAT_N) in STATION that is less than 137.2345. Round your answer to  decimal places.
+```
+select round(long_w,4) from station where lat_n in (select max(lat_n)from station where lat_n<137.2345);
+```
+
+Query the Western Longitude (LONG_W)where the smallest Northern Latitude (LAT_N) in STATION is greater than . Round your answer to  decimal places.
+```
+select round( long_w,4) from station where lat_n in (select min(lat_n) from station where lat_n>38.7780);
+```
+
+Consider  and  to be two points on a 2D plane.
+
+ happens to equal the minimum value in Northern Latitude (LAT_N in STATION).
+ happens to equal the minimum value in Western Longitude (LONG_W in STATION).
+ happens to equal the maximum value in Northern Latitude (LAT_N in STATION).
+ happens to equal the maximum value in Western Longitude (LONG_W in STATION).
+Query the Manhattan Distance between points  and  and round it to a scale of  decimal places.
+```
+select round((abs(min(lat_n)-max(lat_n)) + abs(min(long_w)-max(long_w))),4) from station
+```
+Consider  and  to be two points on a 2D plane where  are the respective minimum and maximum values of Northern Latitude (LAT_N) and  are the respective minimum and maximum values of Western Longitude (LONG_W) in STATION.
+
+Query the Euclidean Distance between points  and  and format your answer to display  decimal digits.
+```
+select round(sqrt(  power(min(lat_n)-max(lat_n),2)+ power(min(long_w)-max(long_w),2)),4)from station
+```
+
+A median is defined as a number separating the higher half of a data set from the lower half. Query the median of the Northern Latitudes (LAT_N) from STATION and round your answer to  decimal places.
+
+```
+SELECT ROUND(S1.LAT_N, 4) FROM STATION AS S1 
+WHERE (SELECT ROUND(COUNT(S1.ID)/2) - 1 FROM STATION) = 
+    (SELECT COUNT(S2.ID) FROM STATION AS S2 WHERE S2.LAT_N > S1.LAT_N);
+```
+
+Write a query to output the names of those students whose best friends got offered a higher salary than them. Names must be ordered by the salary amount offered to the best friends. It is guaranteed that no two students got same salary offer.
+```
+select name from students  s 
+join packages p1 on p1.id = s.id
+join friends f on f.id=s.id
+join packages p2 on f.friend_id=p2.id
+where p2.salary>p1.salary
+order by p2.salary;
+```
+
+
+Two pairs (X1, Y1) and (X2, Y2) are said to be symmetric pairs if X1 = Y2 and X2 = Y1.
+
+Write a query to output all such symmetric pairs in ascending order by the value of X. List the rows such that X1 ≤ Y1.
+```
+SELECT X, Y FROM (
+SELECT X, Y FROM Functions WHERE X=Y GROUP BY X, Y HAVING COUNT(*)=2
+UNION
+SELECT f1.X, f1.Y FROM Functions f1, Functions f2 
+WHERE f1.X < f1.Y 
+AND f1.X=f2.Y 
+AND f2.X=f1.Y
+)t
+ORDER BY X, Y;
+```
+
+Samantha interviews many candidates from different colleges using coding challenges and contests. Write a query to print the contest_id, hacker_id, name, and the sums of total_submissions, total_accepted_submissions, total_views, and total_unique_views for each contest sorted by contest_id. Exclude the contest from the result if all four sums are .
+```
+select con.contest_id,
+        con.hacker_id, 
+        con.name, 
+        sum(total_submissions), 
+        sum(total_accepted_submissions), 
+        sum(total_views), sum(total_unique_views)
+from contests con 
+join colleges col on con.contest_id = col.contest_id 
+join challenges cha on  col.college_id = cha.college_id 
+left join
+(select challenge_id, sum(total_views) as total_views, sum(total_unique_views) as total_unique_views
+from view_stats group by challenge_id) vs on cha.challenge_id = vs.challenge_id 
+left join
+(select challenge_id, sum(total_submissions) as total_submissions, sum(total_accepted_submissions) as total_accepted_submissions from submission_stats group by challenge_id) ss on cha.challenge_id = ss.challenge_id
+    group by con.contest_id, con.hacker_id, con.name
+        having sum(total_submissions)!=0 or 
+                sum(total_accepted_submissions)!=0 or
+                sum(total_views)!=0 or
+                sum(total_unique_views)!=0
+
+            order by contest_id;
+```
