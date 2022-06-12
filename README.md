@@ -9,3 +9,19 @@ Query the two cities in STATION with the shortest and longest CITY names, as wel
 SELECT CITY,LENGTH(CITY) FROM STATION ORDER BY LENGTH(CITY),CITY LIMIT 1;
 SELECT CITY,LENGTH(CITY) FROM STATION ORDER BY LENGTH(CITY) DESC LIMIT 1;
 ```
+
+Query the list of CITY names starting with vowels (i.e., a, e, i, o, or u) from STATION. Your result cannot contain duplicates.
+```
+SELECT CITY
+FROM STATION
+WHERE LEFT(CITY , 1) IN ('a','e','i','o','u','A','E','I','O','U');
+```
+RIGHT
+```
+SELECT DISTINCT CITY
+FROM STATION
+WHERE RIGHT(CITY , 1) IN ('a','e','i','o','u','A','E','I','O','U');
+```
+
+
+
