@@ -22,6 +22,45 @@ SELECT DISTINCT CITY
 FROM STATION
 WHERE RIGHT(CITY , 1) IN ('a','e','i','o','u','A','E','I','O','U');
 ```
+Query the list of CITY names from STATION that do not start with vowels. Your result cannot contain duplicates.
+```
+SELECT DISTINCT CITY FROM STATION 
+WHERE CITY RLIKE '^[^aeiouAEIOU].*$';
+```
+Query the list of CITY names from STATION that do not end with vowels. Your result cannot contain duplicates.
+```
+SELECT DISTINCT CITY FROM STATION 
+WHERE RIGHT(CITY,1) RLIKE '^[^aeiouAEIOU]';
+```
+Query the list of CITY names from STATION that either do not start with vowels or do not end with vowels. Your result cannot contain duplicates.
+```
+SELECT DISTINCT CITY
+FROM STATION
+WHERE RIGHT(CITY,1) RLIKE '^[^aeiouAEIOU]'
+OR LEFT(CITY,1) RLIKE '^[^aeiouAEIOU]';
+```
+Query the Name of any student in STUDENTS who scored higher than  Marks. Order your output by the last three characters of each name. If two or more students both have names ending in the same last three characters (i.e.: Bobby, Robby, etc.), secondary sort them by ascending ID.
 
+```
+SELECT NAME
+FROM STUDENTS
+WHERE MARKS>75
+ORDER BY RIGHT(NAME,3),ID;
+```
+### Use of Min() and Max()
+The first thing you can notice is the list of SELECT columns: name, price, category, delivered_year. Next is the MIN(price) aggregate function, which finds the lowest value in the price column. OVER is what makes this a window function; it defines the window. or the set of rows within the query result set. This allows us to calculate an aggregate value for each row in the window. Here, OVER is paired with ORDER BY category DESC (i.e. in descending order); thus, the minimum price is always $3, because the lowest price in the “hair” category is $3, which is lower than the next category minimum of $5.
+```
+SELECT name, price, category, delivered_year,
+  MIN(price) OVER (ORDER BY category DESC) AS min_price
+FROM cosmetics;
+```
+https://learnsql.com/blog/sql-min-max-functions/
 
-
+This query calculates the minimum price for each partition based on the delivered_year column and sorts rows by the category.
+```
+SELECT name, price, category, delivered_year,
+  MIN(price) OVER (PARTITION BY delivered_year
+            ORDER BY category DESC)
+  AS min_price
+FROM cosmetics;
+```
