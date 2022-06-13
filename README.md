@@ -163,3 +163,12 @@ left join
 
             order by contest_id;
 ```
+
+## find duplicate
+To find duplicates in multiple column values, we can use the following query. It’s very similar to the one for a single column:
+```
+SELECT OrderID, ProductID, COUNT(*)
+FROM OrderDetails
+GROUP BY OrderID, ProductID
+HAVING COUNT(*) > 1
+```
